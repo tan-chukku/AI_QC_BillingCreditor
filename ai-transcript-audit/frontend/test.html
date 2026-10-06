@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f3f5f2">
+    <title>Transcript Desk | Hồ sơ thanh toán</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="#top" aria-label="Transcript Desk, về đầu trang">
+            <span class="brand-mark" aria-hidden="true">T</span>
+            <span>TRANSCRIPT <strong>DESK</strong></span>
+        </a>
+        <span class="local-status"><span class="status-dot"></span><span id="processing-mode">Đang kiểm tra Gemini AI</span></span>
+    </header>
+
+    <main id="top">
+        <section class="page-heading" aria-labelledby="page-title">
+            <p class="eyebrow">WORKSPACE / SETTLEMENT</p>
+            <h1 id="page-title">Từ transcript<br><span>thành hồ sơ thanh toán.</span></h1>
+            <p class="page-description">Dán transcript để điền thông tin khách hàng và đề nghị thanh toán vào bảng.</p>
+        </section>
+
+        <section class="workspace" aria-label="Công cụ tổng hợp transcript">
+            <div class="source-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="step-label">01 <span>·</span> NGUỒN</p>
+                        <h2>Transcript</h2>
+                    </div>
+                    <label class="file-button" for="file-input">Mở tệp .txt</label>
+                    <input id="file-input" type="file" accept=".txt,.md,text/plain,text/markdown" hidden>
+                </div>
+                <label class="visually-hidden" for="transcript-input">Nội dung transcript</label>
+                <textarea id="transcript-input" placeholder="Dán toàn bộ transcript cuộc gọi vào đây...&#10;&#10;Có thể trích xuất từ hội thoại tự nhiên hoặc theo nhãn, ví dụ:&#10;Client name: ...&#10;DOB: ...&#10;SSN: ...&#10;Settlement offer: ..."></textarea>
+                <div class="source-footer">
+                    <span id="word-count">0 từ</span>
+                    <button id="clear-button" class="text-button" type="button">Xóa nội dung</button>
+                </div>
+                <button id="analyze-button" class="primary-button" type="button" disabled>
+                    <span>Tổng hợp transcript</span><span aria-hidden="true">→</span>
+                </button>
+                <p class="privacy-note" id="privacy-note">Đang kiểm tra nơi xử lý transcript.</p>
+            </div>
+
+            <div class="results-panel">
+                <div class="panel-heading results-heading">
+                    <div>
+                        <p class="step-label">02 <span>·</span> KẾT QUẢ</p>
+                        <h2>Hồ sơ thanh toán</h2>
+                    </div>
+                    <div class="export-actions">
+                        <button id="copy-button" class="secondary-button" type="button" disabled>Sao chép</button>
+                        <button id="export-button" class="secondary-button" type="button" disabled>Tải xuống</button>
+                    </div>
+                </div>
+                <p id="result-status" class="result-status" aria-live="polite">Các trường sẽ được điền khi bạn tổng hợp transcript.</p>
+
+                <div class="table-scroll">
+                    <table class="results-table">
+                        <thead><tr><th scope="col">Thông tin</th><th scope="col">Giá trị trích xuất</th></tr></thead>
+                        <tbody>
+                            <tr><th scope="row">Client name</th><td><input id="field-client-name" data-label="Client name" data-key="clientName" autocomplete="off" placeholder="Chưa tìm thấy"></td></tr>
+                            <tr><th scope="row">DOB</th><td><input id="field-dob" data-label="DOB" data-key="dob" autocomplete="off" placeholder="Chưa tìm thấy"></td></tr>
+                            <tr><th scope="row">SSN</th><td><input id="field-ssn" data-label="SSN" data-key="ssn" autocomplete="off" placeholder="Chưa tìm thấy"></td></tr>
+                            <tr><th scope="row">Address</th><td><input id="field-address" data-label="Address" data-key="address" autocomplete="off" placeholder="Chưa tìm thấy"></td></tr>
+                            <tr><th scope="row">Phone</th><td><input id="field-phone" data-label="Phone" data-key="phone" autocomplete="off" placeholder="Chưa tìm thấy"></td></tr>
+                            <tr><th scope="row">Call from</th><td><input id="field-call-from" data-label="Call from" data-key="callFrom" autocomplete="off" placeholder="Chưa tìm thấy"></td></tr>
+                            <tr><th scope="row">Bank</th><td><input id="field-bank" data-label="Bank" data-key="bank" autocomplete="off" placeholder="Chưa tìm thấy"></td></tr>
+                            <tr><th scope="row">Account/File #/Reference # settled</th><td><input id="field-settled-reference" data-label="Account/File #/Reference # settled" data-key="settledReference" autocomplete="off" placeholder="Chưa tìm thấy"></td></tr>
+                            <tr><th scope="row">Account (to withdraw)</th><td><input id="field-withdrawal-account" data-label="Account (to withdraw)" data-key="withdrawalAccount" autocomplete="off" placeholder="Chưa tìm thấy"></td></tr>
+                            <tr><th scope="row">Routing</th><td><input id="field-routing" data-label="Routing" data-key="routing" autocomplete="off" placeholder="Chưa tìm thấy"></td></tr>
+                            <tr><th scope="row">Settlement offer</th><td><input id="field-settlement-offer" data-label="Settlement offer" data-key="settlementOffer" autocomplete="off" placeholder="Chưa tìm thấy"></td></tr>
+                            <tr><th scope="row">Number to make payment</th><td><input id="field-payment-number" data-label="Number to make payment" data-key="paymentCount" autocomplete="off" placeholder="Chưa tìm thấy"></td></tr>
+                            <tr><th scope="row">Amount</th><td><input id="field-amount" data-label="Amount" data-key="amount" autocomplete="off" placeholder="Chưa tìm thấy"></td></tr>
+                            <tr><th scope="row">Process payment date</th><td><input id="field-process-payment-date" data-label="Process payment date" data-key="processPaymentDate" autocomplete="off" placeholder="Chưa tìm thấy"></td></tr>
+                            <tr><th scope="row">Confirmation number</th><td><input id="field-confirmation-number" data-label="Confirmation number" data-key="confirmationNumber" autocomplete="off" placeholder="Chưa tìm thấy"></td></tr>
+                            <tr><th scope="row">Bank final confirmation / Disclosure</th><td><textarea id="field-disclosure" data-label="Bank final confirmation / Disclosure" data-key="disclosure" rows="4" autocomplete="off" placeholder="Chưa tìm thấy"></textarea></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <section class="audit-checklist" data-client-index="0" aria-labelledby="audit-checklist-title">
+                    <div class="audit-heading">
+                        <div>
+                            <p class="step-label">03 <span>·</span> AUDIT</p>
+                            <h3 id="audit-checklist-title">Checklist audit · Bước 1</h3>
+                        </div>
+                        <p class="audit-legend">Tự kiểm tra theo transcript hoặc auditor xác nhận</p>
+                    </div>
+                    <ul class="audit-list">
+                        <li>
+                            <label><input type="checkbox" data-audit-auto="bank-caller" disabled><span>Call from phù hợp với Bank theo quy trình</span></label>
+                            <small data-audit-detail="bank-caller">Chưa đánh giá</small>
+                        </li>
+                        <li>
+                            <label><input type="checkbox" data-audit-manual data-audit-label="Bot xưng đúng assigned company/law firm theo profile và POA"><span>Bot xưng đúng assigned company/law firm theo profile và POA</span></label>
+                            <small>Đối chiếu profile, account và LPOA/POA trên CRM</small>
+                        </li>
+                        <li>
+                            <label><input type="checkbox" data-audit-manual data-audit-label="Bot nêu đúng mục đích cuộc gọi"><span>Bot nêu đúng mục đích cuộc gọi</span></label>
+                            <small>Auditor đối chiếu recording với mục đích set up payment</small>
+                        </li>
+                        <li>
+                            <label><input type="checkbox" data-audit-auto="client-info" disabled><span>Client name, SSN, DOB và Account/File/Reference #</span></label>
+                            <small data-audit-detail="client-info">Chưa đánh giá</small>
+                        </li>
+                        <li>
+                            <label><input type="checkbox" data-audit-auto="settlement" disabled><span>Settlement total, số kỳ, amount và ngày charge từng kỳ</span></label>
+                            <small data-audit-detail="settlement">Chưa đánh giá</small>
+                        </li>
+                        <li>
+                            <label><input type="checkbox" data-audit-manual data-audit-label="Bot đã cố set up toàn bộ payments hoặc số kỳ nhiều nhất có thể"><span>Bot đã cố set up toàn bộ payments hoặc số kỳ nhiều nhất có thể</span></label>
+                            <small>Auditor đối chiếu offer với payments đã set up</small>
+                        </li>
+                        <li>
+                            <label><input type="checkbox" data-audit-auto="ach" disabled><span>Routing number và Account Number ACH</span></label>
+                            <small data-audit-detail="ach">Chưa đánh giá</small>
+                        </li>
+                        <li>
+                            <label><input type="checkbox" data-audit-auto="confirmation" disabled><span>Confirmation number hoặc transcript ghi nhận N/A</span></label>
+                            <small data-audit-detail="confirmation">Chưa đánh giá</small>
+                        </li>
+                        <li>
+                            <label><input type="checkbox" data-audit-auto="disclosure" disabled><span>Bank xác nhận cuối cuộc gọi khớp payment setup</span></label>
+                            <small data-audit-detail="disclosure">Chưa đánh giá</small>
+                        </li>
+                        <li>
+                            <label><input type="checkbox" data-audit-manual data-audit-label="Payment được tick đúng và đã bấm Set Up Phonepay"><span>Payment được tick đúng và đã bấm Set Up Phonepay</span></label>
+                            <small>Xác nhận trên CRM/Payments tab</small>
+                        </li>
+                    </ul>
+                    <p class="audit-summary" aria-live="polite">Checklist sẽ được cập nhật sau khi Gemini phân tích transcript.</p>
+                </section>
+                <div id="additional-client-panels"></div>
+            </div>
+        </section>
+        <footer class="page-footer"><span>TRANSCRIPT DESK</span><span>Biên bản luôn có thể được chỉnh sửa trước khi chia sẻ.</span></footer>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
