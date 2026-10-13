@@ -138,3 +138,175 @@ textarea:focus, input:focus { border-color: #6ea58e; box-shadow: 0 0 0 3px rgba(
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+:root {
+    --ink: #442c38;
+    --muted: #8b707d;
+    --line: #f0d8e2;
+    --paper: rgba(255, 253, 254, .94);
+    --canvas: #fff4f7;
+    --green: #bb557e;
+    --green-dark: #943c63;
+    --coral: #e89caa;
+    background: var(--canvas);
+}
+
+body {
+    position: relative;
+    isolation: isolate;
+    background:
+        radial-gradient(ellipse at 5% 13%, rgba(255, 210, 224, .72), transparent 28rem),
+        radial-gradient(ellipse at 96% 61%, rgba(255, 224, 211, .56), transparent 31rem),
+        linear-gradient(145deg, #fff8fa 0%, #fff1f6 52%, #fff9f4 100%);
+}
+
+body::before {
+    position: fixed;
+    z-index: -1;
+    inset: 0;
+    pointer-events: none;
+    content: "";
+    opacity: .62;
+    background:
+        radial-gradient(ellipse 12px 21px at 91% 14%, #f5c0d2 0 55%, transparent 59%),
+        radial-gradient(ellipse 12px 21px at 94% 16%, #f8cedb 0 55%, transparent 59%),
+        radial-gradient(ellipse 12px 21px at 91% 18%, #f3b5ca 0 55%, transparent 59%),
+        radial-gradient(ellipse 12px 21px at 88% 16%, #f8cedb 0 55%, transparent 59%),
+        radial-gradient(ellipse 12px 21px at 91% 16%, #fff8fa 0 24%, transparent 29%),
+        radial-gradient(ellipse 9px 16px at 7% 76%, #f6c2d3 0 54%, transparent 59%),
+        radial-gradient(ellipse 9px 16px at 9% 78%, #f9d2de 0 54%, transparent 59%),
+        radial-gradient(ellipse 9px 16px at 7% 80%, #f5b9cd 0 54%, transparent 59%),
+        radial-gradient(ellipse 9px 16px at 5% 78%, #f9d2de 0 54%, transparent 59%),
+        radial-gradient(ellipse 9px 16px at 7% 78%, #fff8fa 0 24%, transparent 29%),
+        radial-gradient(circle at 84% 30%, #fff 0 1px, transparent 2px),
+        radial-gradient(circle at 96% 39%, #fff 0 2px, transparent 3px),
+        radial-gradient(circle at 4% 47%, #fff 0 1px, transparent 2px),
+        radial-gradient(circle at 15% 87%, #fff 0 2px, transparent 3px);
+}
+
+.topbar {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 250, 252, .82);
+    border-bottom-color: rgba(231, 190, 207, .7);
+    box-shadow: 0 4px 24px rgba(128, 63, 91, .045);
+    backdrop-filter: blur(14px);
+}
+
+.brand { letter-spacing: 1.2px; }
+.brand strong, .page-heading h1 span { color: var(--green); }
+.brand-mark {
+    width: 31px;
+    height: 31px;
+    border-radius: 50% 50% 48% 12%;
+    background: linear-gradient(145deg, #e79bb5, #b94d79);
+    box-shadow: 0 4px 12px rgba(185, 77, 121, .24);
+}
+.local-status { color: #896d7b; }
+.status-dot { background: #61a982; box-shadow: 0 0 0 3px #e3f2e9; }
+
+main {
+    position: relative;
+    z-index: 1;
+    padding-top: 58px;
+}
+
+.page-heading { margin-bottom: 37px; }
+.eyebrow, .step-label { color: #b04e77; }
+.page-heading h1 { color: #472d39; }
+.page-description { color: #856e7a; }
+
+.workspace { gap: 20px; }
+.source-panel, .results-panel {
+    border: 1px solid rgba(235, 202, 215, .88);
+    border-radius: 7px;
+    background: var(--paper);
+    box-shadow: 0 16px 44px rgba(113, 55, 80, .075), 0 2px 8px rgba(113, 55, 80, .035);
+    backdrop-filter: blur(10px);
+}
+.source-panel { border-top: 3px solid #e69ab4; }
+.results-panel { border-top: 3px solid #d88aa8; }
+.panel-heading h2, .additional-client-panel h3, .audit-heading h3 { color: #533644; }
+.step-label span { color: #e4a0b3; }
+
+.file-button, .secondary-button {
+    border-color: #ebd2dd;
+    border-radius: 4px;
+    background: #fffafd;
+    color: #684b5a;
+    transition: border-color .18s, background .18s, color .18s, transform .18s, box-shadow .18s;
+}
+.file-button:hover, .secondary-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: #d58aa5;
+    background: #fff3f7;
+    color: #963d63;
+    box-shadow: 0 4px 12px rgba(185, 77, 121, .1);
+}
+.source-panel textarea {
+    border-color: #ecd9e1;
+    border-radius: 5px;
+    background: #fffbfd;
+    color: var(--ink);
+}
+textarea:focus, input:focus,
+.results-table input:focus, .results-table textarea:focus {
+    border-color: #d77f9f;
+    box-shadow: 0 0 0 3px rgba(202, 105, 143, .13);
+}
+textarea::placeholder, input::placeholder,
+.results-table input::placeholder, .results-table textarea::placeholder { color: #b59eaa; }
+.source-footer { color: #a18c98; }
+.text-button { color: #896f7e; }
+.text-button:hover { color: #bc507a; }
+.primary-button {
+    border-radius: 5px;
+    background: linear-gradient(105deg, #c35c83, #a84470);
+    box-shadow: 0 6px 15px rgba(168, 68, 112, .2);
+}
+.primary-button:hover {
+    background: linear-gradient(105deg, #ad486f, #91375f);
+    box-shadow: 0 8px 18px rgba(168, 68, 112, .26);
+}
+.privacy-note { color: #a18d98; }
+.secondary-button:disabled { border-color: #eee2e7; color: #b9aab2; background: #fcf8fa; }
+.result-status {
+    border-left: 3px solid #d986a3;
+    border-radius: 0 4px 4px 0;
+    background: #fff4f7;
+    color: #7c5c6c;
+}
+.results-table th, .results-table td { border-bottom-color: #f2e3e9; }
+.results-table thead th { color: #987a8b; }
+.results-table tbody th { color: #674d5b; }
+.results-table input, .results-table textarea {
+    border-color: #eddee5;
+    border-radius: 4px;
+    background: #fffdfd;
+    color: #503746;
+    transition: border-color .16s, box-shadow .16s, background .16s;
+}
+.results-table input:hover, .results-table textarea:hover { border-color: #e0b5c6; }
+.additional-client-panel, .audit-checklist { border-color: #ecd9e1; }
+.audit-heading h3, .additional-client-panel h3 { color: #583a49; }
+.audit-legend, .audit-list small { color: #927b88; }
+.audit-list li { border-top-color: #f0e2e8; }
+.audit-list label { color: #674d5b; }
+.audit-list input { accent-color: #c25780; }
+.audit-summary {
+    border-radius: 4px;
+    background: #fff1f6;
+    color: #914365;
+}
+.page-footer { color: #9a8491; }
+.page-footer span:first-child { color: #b04e77; }
+
+@media (max-width: 800px) {
+    main { padding-top: 42px; }
+}
+
+@media (max-width: 520px) {
+    main { padding-top: 33px; }
+    .topbar { background: rgba(255, 250, 252, .92); }
+    .source-panel, .results-panel { border-radius: 6px; }
+}

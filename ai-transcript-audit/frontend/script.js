@@ -88,6 +88,52 @@ function fillField(id, value) {
     document.getElementById(id).value = value || "";
 }
 
+function formatSsn(value) {
+    const digits = String(value || "").replace(/\D/g, "");
+    return digits.length === 9
+        ? `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`
+        : value || "";
+}
+
+function formatDob(value) {
+    const date = String(value || "").trim();
+    const yearFirst = date.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/);
+    const monthFirst = date.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+    const namedMonth = date.match(/^([a-z]+)\s+(\d{1,2}),?\s+(\d{4})$/i);
+    const digits = date.replace(/\D/g, "");
+    const monthNumber = {
+        january: "01", jan: "01", february: "02", feb: "02",
+        march: "03", mar: "03", april: "04", apr: "04",
+        may: "05", june: "06", jun: "06", july: "07", jul: "07",
+        august: "08", aug: "08", september: "09", sept: "09", sep: "09",
+        october: "10", oct: "10", november: "11", nov: "11",
+        december: "12", dec: "12"
+    };
+
+    if (yearFirst) {
+        return `${yearFirst[2].padStart(2, "0")}-${yearFirst[3].padStart(2, "0")}-${yearFirst[1]}`;
+    }
+    if (monthFirst) {
+        return `${monthFirst[1].padStart(2, "0")}-${monthFirst[2].padStart(2, "0")}-${monthFirst[3]}`;
+    }
+    if (namedMonth && monthNumber[namedMonth[1].toLowerCase()]) {
+        return `${monthNumber[namedMonth[1].toLowerCase()]}-${namedMonth[2].padStart(2, "0")}-${namedMonth[3]}`;
+    }
+    if (digits.length === 8) {
+        return digits.startsWith("19") || digits.startsWith("20")
+            ? `${digits.slice(4, 6)}-${digits.slice(6)}-${digits.slice(0, 4)}`
+            : `${digits.slice(0, 2)}-${digits.slice(2, 4)}-${digits.slice(4)}`;
+    }
+    return value || "";
+}
+
+function formatPhone(value) {
+    const digits = String(value || "").replace(/\D/g, "");
+    return digits.length === 10
+        ? `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`
+        : value || "";
+}
+
 function evaluateBankCaller(bank, callFrom) {
     const normalizedBank = String(bank || "").toUpperCase().replace(/[^A-Z0-9]+/g, " ").trim();
     const normalizedCaller = String(callFrom || "").toUpperCase().replace(/[^A-Z0-9]+/g, " ").trim();
@@ -210,7 +256,12 @@ async function analyzeTranscript() {
         resultFields.forEach((field) => {
             const clientIndex = Number(field.dataset.clientIndex || 0);
             const clientData = clientIndex === 0 ? result : result.additionalClients?.[clientIndex - 1];
-            fillField(field.id, clientData?.[field.dataset.key]);
+            const value = clientData?.[field.dataset.key];
+            const formattedValue = field.dataset.key === "ssn" ? formatSsn(value)
+                : field.dataset.key === "dob" ? formatDob(value)
+                    : field.dataset.key === "phone" ? formatPhone(value)
+                        : value;
+            fillField(field.id, formattedValue);
         });
         updateAuditChecklist(result, rawText);
 
