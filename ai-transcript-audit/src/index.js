@@ -1,6 +1,7 @@
 const http = require("node:http");
 const fs = require("node:fs/promises");
 const path = require("node:path");
+const crypto = require("node:crypto");
 
 const HOST = process.env.HOST || "127.0.0.1";
 const PORT = Number(process.env.PORT) || 3000;
@@ -621,8 +622,61 @@ async function serveFrontend(request, response, pathname) {
 	}
 }
 
+
+// ===== Lớp mật khẩu (HTTP Basic Auth) =====
+const APP_USERNAME = process.env.APP_USERNAME || "admin";
+const APP_PASSWORD = process.env.APP_PASSWORD || "";
+const MAX_FAILED_LOGINS = 10;
+const LOCKOUT_MS = 15 * 60 * 1000;
+const failedLogins = new Map();
+
+function safeEqual(left, right) {
+	const leftHash = crypto.createHash("sha256").update(String(left)).digest();
+	const rightHash = crypto.createHash("sha256").update(String(right)).digest();
+	return crypto.timingSafeEqual(leftHash, rightHash);
+}
+
+function getClientIp(request) {
+	return String(request.headers["x-forwarded-for"] || "").split(",")[0].trim() || request.socket.remoteAddress || "unknown";
+}
+
+function checkAuth(request, response) {
+	if (!APP_PASSWORD) return true;
+	const ip = getClientIp(request);
+	const now = Date.now();
+	const record = failedLogins.get(ip);
+	if (record && record.count >= MAX_FAILED_LOGINS && now - record.firstAt < LOCKOUT_MS) {
+		response.writeHead(429, { "Content-Type": "text/plain; charset=utf-8", "Retry-After": "900" });
+		response.end("Sai mật khẩu quá nhiều lần. Vui lòng thử lại sau 15 phút.");
+		return false;
+	}
+
+	const header = request.headers.authorization || "";
+	if (header.startsWith("Basic ")) {
+		const decoded = Buffer.from(header.slice(6), "base64").toString("utf8");
+		const separator = decoded.indexOf(":");
+		const username = decoded.slice(0, separator);
+		const password = decoded.slice(separator + 1);
+		if (separator !== -1 && safeEqual(username, APP_USERNAME) && safeEqual(password, APP_PASSWORD)) {
+			failedLogins.delete(ip);
+			return true;
+		}
+		const fresh = !record || now - record.firstAt >= LOCKOUT_MS;
+		failedLogins.set(ip, { count: fresh ? 1 : record.count + 1, firstAt: fresh ? now : record.firstAt });
+	}
+
+	response.writeHead(401, {
+		"Content-Type": "text/plain; charset=utf-8",
+		"WWW-Authenticate": 'Basic realm="Transcript Desk", charset="UTF-8"'
+	});
+	response.end("Cần đăng nhập để sử dụng Transcript Desk.");
+	return false;
+}
+
 function createServer() {
 	return http.createServer(async (request, response) => {
+		if (!checkAuth(request, response)) return;
+
 		let pathname;
 		try {
 			pathname = decodeURIComponent(new URL(request.url, `http://${HOST}`).pathname);
@@ -664,6 +718,12 @@ function createServer() {
 }
 
 if (require.main === module) {
+	const isLocalOnly = ["127.0.0.1", "localhost", "::1"].includes(HOST);
+	if (!APP_PASSWORD && !isLocalOnly) {
+		console.error("Dừng lại: server đang mở ra ngoài (HOST=" + HOST + ") nhưng chưa đặt APP_PASSWORD.");
+		process.exit(1);
+	}
+	if (!APP_PASSWORD) console.warn("Lưu ý: chưa đặt APP_PASSWORD, app chạy không cần mật khẩu (chỉ nên dùng trên máy cá nhân).");
 	createServer().listen(PORT, HOST, () => {
 		console.log(`Transcript Desk đang chạy tại http://${HOST}:${PORT}`);
 	});
